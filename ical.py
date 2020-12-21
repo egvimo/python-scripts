@@ -18,6 +18,5 @@ for event_name in data:
         cal.add_component(event)
 
 Path('out/').mkdir(parents=True, exist_ok=True)
-f = open('out/output.ics', 'wb')
-f.write(cal.to_ical())
-f.close()
+with open('out/output.ics', 'wb') as f:
+    f.write(cal.to_ical())
