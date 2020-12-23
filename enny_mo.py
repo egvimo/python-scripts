@@ -46,7 +46,8 @@ class EnnyMoSpider(scrapy.Spider):
             f.write(response.body)
 
 
-process = CrawlerProcess(get_project_settings())
+if __name__ == '__main__':
+    process = CrawlerProcess(get_project_settings())
 
-process.crawl(EnnyMoSpider)
-process.start()
+    process.crawl(EnnyMoSpider)
+    process.start()
