@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from icalendar import Calendar, Event
 from datetime import datetime
 from pathlib import Path
