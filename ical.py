@@ -11,7 +11,9 @@ data = {
 }
 
 
-def create_ical(cal, data):
+def create_ical(data):
+    cal = Calendar()
+
     for event_name in data:
         for event_date in data[event_name]:
             event = Event()
@@ -19,6 +21,8 @@ def create_ical(cal, data):
             event.add('dtstart', datetime.strptime(
                 event_date, '%d.%m.%Y').date())
             cal.add_component(event)
+
+    return cal
 
 
 def export_to_file(cal):
@@ -28,6 +32,5 @@ def export_to_file(cal):
 
 
 if __name__ == "__main__":
-    cal = Calendar()
-    create_ical(cal, data)
+    cal = create_ical(data)
     export_to_file(cal)
