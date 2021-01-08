@@ -10,15 +10,24 @@ data = {
     'Sperrmüll': ['27.01.2021', '20.07.2021']
 }
 
-cal = Calendar()
 
-for event_name in data:
-    for event_date in data[event_name]:
-        event = Event()
-        event.add('summary', event_name)
-        event.add('dtstart', datetime.strptime(event_date, '%d.%m.%Y').date())
-        cal.add_component(event)
+def create_ical(cal, data):
+    for event_name in data:
+        for event_date in data[event_name]:
+            event = Event()
+            event.add('summary', event_name)
+            event.add('dtstart', datetime.strptime(
+                event_date, '%d.%m.%Y').date())
+            cal.add_component(event)
 
-Path('out/').mkdir(parents=True, exist_ok=True)
-with open('out/output.ics', 'wb') as f:
-    f.write(cal.to_ical())
+
+def export_to_file(cal):
+    Path('out/').mkdir(parents=True, exist_ok=True)
+    with open('out/output.ics', 'wb') as f:
+        f.write(cal.to_ical())
+
+
+if __name__ == "__main__":
+    cal = Calendar()
+    create_ical(cal, data)
+    export_to_file(cal)
