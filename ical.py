@@ -25,9 +25,9 @@ def create_ical(data):
     return cal
 
 
-def export_to_file(cal):
-    Path('out/').mkdir(parents=True, exist_ok=True)
-    with open('out/output.ics', 'wb') as f:
+def export_to_file(cal, target_path='out/', filename='output.ics'):
+    Path(target_path).mkdir(parents=True, exist_ok=True)
+    with open(target_path + filename, 'wb') as f:
         f.write(cal.to_ical())
 
 
