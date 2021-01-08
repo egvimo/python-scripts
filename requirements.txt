@@ -1,3 +1,4 @@
+pylint==2.6.0
+pytest==6.2.1
 icalendar==4.0.7
 scrapy==2.4.1
-pytest==6.2.1
