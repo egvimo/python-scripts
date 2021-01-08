@@ -1,5 +1,7 @@
 # Collection of Python scripts
 
+![Python CI](https://github.com/egvimo/python-scripts/workflows/Python%20CI/badge.svg)
+
 Some useful Python scripts.
 
 ## License
