@@ -22,29 +22,29 @@ def parse_arguments():
     return args
 
 
-def shift_letter(char):
+def shift_letter(char, shift_amount):
     isUpper = char.isupper()
     current_position = letters.index(char.lower())
-    result = letters[(current_position + args.shift_amount) % len(letters)]
+    result = letters[(current_position + shift_amount) % len(letters)]
 
     return result.upper() if isUpper else result
 
 
-def shift_digit(char):
+def shift_digit(char, shift_amount):
     current_position = digits.index(char)
-    result = digits[(current_position + args.shift_amount) % len(digits)]
+    result = digits[(current_position + shift_amount) % len(digits)]
 
     return result
 
 
-def shift(args):
+def shift(message, shift_amount=1):
     result = ''
 
-    for char in args.message:
+    for char in message:
         if char.lower() in letters:
-            result += shift_letter(char)
+            result += shift_letter(char, shift_amount)
         elif char.lower() in digits:
-            result += shift_digit(char)
+            result += shift_digit(char, shift_amount)
         else:
             result += char
 
@@ -53,4 +53,4 @@ def shift(args):
 
 if __name__ == '__main__':
     args = parse_arguments()
-    print(shift(args))
+    print(shift(args.message))
