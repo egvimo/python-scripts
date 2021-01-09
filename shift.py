@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-"""Shifts letters and digits by the given amount."""
-
 import argparse
 
 LETTERS = 'abcdefghijklmnopqrstuvwxyz'
@@ -9,7 +7,6 @@ DIGITS = '0123456789'
 
 
 def parse_arguments():
-    """Parse command line arguments."""
     parser = argparse.ArgumentParser(
         description='Shift characters by the given amount')
     parser.add_argument('-m', '--message', type=str,
@@ -26,7 +23,6 @@ def parse_arguments():
 
 
 def shift_letter(char, shift_amount):
-    """Shifts letters by the given amount."""
     current_position = LETTERS.index(char.lower())
     result = LETTERS[(current_position + shift_amount) % len(LETTERS)]
 
@@ -34,7 +30,6 @@ def shift_letter(char, shift_amount):
 
 
 def shift_digit(char, shift_amount):
-    """Shifts digits by the given amount."""
     current_position = DIGITS.index(char)
     result = DIGITS[(current_position + shift_amount) % len(DIGITS)]
 
@@ -42,7 +37,6 @@ def shift_digit(char, shift_amount):
 
 
 def shift(message, shift_amount=1):
-    """Shifts letters and digits by the given amount, ignoring all other characters."""
     result = ''
 
     for char in message:

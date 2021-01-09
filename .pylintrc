@@ -1,9 +1,5 @@
 [MASTER]
-good-names=i,
-           j,
-           k,
-           f,
-           ex,
-           Run,
-           _
-
+good-names=f
+disable=missing-module-docstring,
+        missing-class-docstring,
+        missing-function-docstring

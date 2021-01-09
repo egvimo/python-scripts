@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-"""Script to generate iCal event for given data."""
-
 from datetime import datetime
 from pathlib import Path
 from icalendar import Calendar, Event
@@ -19,7 +17,6 @@ DATA = {
 
 
 def create_ical(data):
-    """Generates the Calendar from the data."""
     cal = Calendar()
 
     for event_name in data:
@@ -34,7 +31,6 @@ def create_ical(data):
 
 
 def export_to_file(cal, target_path='out/', filename='output.ics'):
-    """Exports the Calendar to a file."""
     Path(target_path).mkdir(parents=True, exist_ok=True)
     with open(target_path + filename, 'wb') as f:
         f.write(cal.to_ical())
