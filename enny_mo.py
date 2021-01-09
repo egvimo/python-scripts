@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 
-import scrapy
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
+"""Script to download Enny & Mo audiobooks."""
+
 from urllib.parse import urljoin
 from functools import partial
 from pathlib import Path
+import scrapy
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
 
 
 class EnnyMoSpider(scrapy.Spider):
+    """Uses Scrapy to crawl the website and download the content."""
     name = "enny_mo"
 
     headers = {
@@ -25,7 +28,7 @@ class EnnyMoSpider(scrapy.Spider):
             yield scrapy.Request(url=url, headers=self.headers,
                                  callback=self.parse)
 
-    def parse(self, response):
+    def parse(self, response, **kwargs):
         result = response.css('#maincontent .box-free-download__text')
 
         for item in result:
@@ -40,6 +43,7 @@ class EnnyMoSpider(scrapy.Spider):
                                                   name=name))
 
     def download_file(self, response, name):
+        """Downloads the files."""
         self.log('Saving {} as {}'.format(response.url, name))
         Path('out/').mkdir(parents=True, exist_ok=True)
         with open('out/' + name, 'wb') as f:
