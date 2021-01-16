@@ -1,4 +1,3 @@
-from icalendar import Calendar
 import os
 import pytest
 import ical
