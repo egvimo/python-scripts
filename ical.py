@@ -25,6 +25,7 @@ def create_ical(data):
             event.add('summary', event_name)
             event.add('dtstart', datetime.strptime(
                 event_date, '%d.%m.%Y').date())
+            event.add('transp', 'TRANSPARENT')
             cal.add_component(event)
 
     return cal

@@ -10,10 +10,12 @@ RESULT = ('BEGIN:VCALENDAR\n'
           'BEGIN:VEVENT\n'
           'SUMMARY:Test\n'
           'DTSTART;VALUE=DATE:20210105\n'
+          'TRANSP:TRANSPARENT\n'
           'END:VEVENT\n'
           'BEGIN:VEVENT\n'
           'SUMMARY:Test\n'
           'DTSTART;VALUE=DATE:20210310\n'
+          'TRANSP:TRANSPARENT\n'
           'END:VEVENT\n'
           'END:VCALENDAR')
 
