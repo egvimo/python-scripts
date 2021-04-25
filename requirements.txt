@@ -1,4 +1,4 @@
-pylint==2.7.4
+pylint==2.8.0
 pytest==6.2.3
 icalendar==4.0.7
 scrapy==2.5.0
