@@ -1,6 +1,6 @@
 import os
 import pytest
-import ical
+from scripts import ical
 
 DATA = {
     'Test': ['05.01.2021', '10.03.2021']

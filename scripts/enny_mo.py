@@ -9,9 +9,6 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 
-EPISODE_BOUNDARY = 85
-
-
 class EnnyMoSpider(scrapy.Spider):
     headers = {
         'User-Agent': ('Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) '
@@ -62,8 +59,12 @@ class EnnyMoSpider(scrapy.Spider):
             file.write(response.body)
 
 
-if __name__ == '__main__':
+def start_crawler(episode_boundary=None):
     process = CrawlerProcess(get_project_settings())
 
-    process.crawl(EnnyMoSpider, episode_boundary=EPISODE_BOUNDARY)
+    process.crawl(EnnyMoSpider, episode_boundary=episode_boundary)
     process.start()
+
+
+if __name__ == '__main__':
+    start_crawler()

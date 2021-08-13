@@ -23,7 +23,9 @@ jobs:
         run: pip3 install -r requirements.txt
 
       - name: Lint
-        run: pylint *.py
+        run: |
+          pylint scripts/*.py
+          pylint tests/*.py
 
       - name: Test
         run: pytest

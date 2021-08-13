@@ -1,5 +1,5 @@
 import pytest
-import shift
+from scripts import shift
 
 
 @pytest.mark.parametrize(('message', 'result'), [
