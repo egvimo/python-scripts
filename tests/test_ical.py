@@ -39,5 +39,5 @@ def test_ical_export():
     ical.export_to_file(cal, filename='test.ics')
 
     assert os.path.exists(TEST_PATH)
-    with open(TEST_PATH, 'r') as file:
+    with open(TEST_PATH, 'r', encoding='utf-8') as file:
         assert file.read().strip() == RESULT
