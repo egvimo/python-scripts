@@ -18,6 +18,7 @@ def prepare():
             os.remove(file)
 
 
+@pytest.mark.skip(reason='Switched to podcast')
 def test_episode_download():
     enny_mo.start_crawler(EPISODE_BOUNDARY)
 
