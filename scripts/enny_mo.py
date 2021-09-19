@@ -53,7 +53,7 @@ class EnnyMoSpider(scrapy.Spider):
         return self.episode_boundary <= int(episode_number.group())
 
     def download_file(self, response, name):
-        self.log('Saving {} as {}'.format(response.url, name))
+        self.log(f"Saving {response.url} as {name}")
         Path('out/').mkdir(parents=True, exist_ok=True)
         with open('out/' + name, 'wb') as file:
             file.write(response.body)
