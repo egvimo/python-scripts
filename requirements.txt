@@ -3,5 +3,5 @@ pytest==6.2.5
 icalendar==4.0.9
 scrapy==2.5.1
 selenium==4.0.0
-markdownify==0.9.4
+markdownify==0.10.0
 requests==2.26.0
