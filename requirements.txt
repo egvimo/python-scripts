@@ -5,3 +5,4 @@ scrapy==2.5.1
 selenium==4.1.0
 markdownify==0.10.2
 requests==2.27.1
+feedparser==6.0.8
