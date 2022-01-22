@@ -89,7 +89,7 @@ class EdxCrawler():
             return False
 
     def _append_content(self, content):
-        with open(f'out/{self.course_name}/edx.md', 'a', encoding='utf8') as file:
+        with open(f'out/{self.course_name}/{self.course_name}.md', 'a', encoding='utf8') as file:
             file.write(content + '\n\n')
 
     def _extract_and_append_content(self, content_element):
