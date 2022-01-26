@@ -1,11 +1,13 @@
+#!/usr/bin/env python3
+
 from pathlib import Path
 import re
 import feedparser
 import requests
 
+
 URL = 'https://enny-und-mo.podigee.io/feed/mp3'
 
-# TODO Add test
 
 def extract_name(entry):
     episode = entry.itunes_episode
