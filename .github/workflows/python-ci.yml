@@ -34,8 +34,7 @@ jobs:
 
       - name: Lint
         run: |
-          pipenv run pylint scripts/*.py
-          pipenv run pylint tests/*.py
+          pipenv run pylint scripts
 
       - name: Test
         run: pipenv run pytest
