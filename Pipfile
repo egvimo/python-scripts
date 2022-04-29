@@ -7,7 +7,7 @@ name = "pypi"
 icalendar = "==4.0.9"
 Scrapy = "==2.6.1"
 selenium = "==4.1.3"
-markdownify = "==0.11.1"
+markdownify = "==0.11.2"
 requests = "==2.27.1"
 feedparser = "==6.0.8"
 
