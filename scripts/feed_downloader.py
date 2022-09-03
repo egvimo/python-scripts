@@ -23,7 +23,7 @@ def extract_link(entry):
 
 def download_file(link, name):
     Path('out/').mkdir(parents=True, exist_ok=True)
-    response = requests.get(link)
+    response = requests.get(link, timeout=1)
     with open(f"out/{name}.mp3", 'wb') as file:
         file.write(response.content)
 
