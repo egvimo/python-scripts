@@ -13,4 +13,4 @@ feedparser = "==6.0.10"
 
 [dev-packages]
 pylint = "==2.15.2"
-pytest = "==7.1.2"
+pytest = "==7.1.3"
