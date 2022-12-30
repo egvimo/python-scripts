@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-icalendar = "==5.0.3"
+icalendar = "==5.0.4"
 Scrapy = "==2.7.1"
 selenium = "==4.7.2"
 markdownify = "==0.11.6"
