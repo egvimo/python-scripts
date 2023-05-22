@@ -8,7 +8,7 @@ icalendar = "==5.0.5"
 Scrapy = "==2.9.0"
 selenium = "==4.9.1"
 markdownify = "==0.11.6"
-requests = "==2.30.0"
+requests = "==2.31.0"
 feedparser = "==6.0.10"
 
 [dev-packages]
