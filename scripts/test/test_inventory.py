@@ -1,7 +1,7 @@
 import os
 import glob
 import pytest
-from scripts import list as ls
+from scripts import inventory
 
 
 TEST_PATH = './out'
@@ -16,8 +16,8 @@ def prepare():
             os.remove(file)
 
 
-def test_list():
-    ls.create_csv('/tmp', TEST_PATH)
+def test_inventory():
+    inventory.create_csv('/tmp', TEST_PATH)
 
     assert os.path.exists(TEST_PATH)
     assert len(glob.glob(TEST_FILES)) > 0
