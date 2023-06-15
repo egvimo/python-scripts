@@ -45,7 +45,7 @@ def _read_config(config_path: str) -> str | None:
 
 
 def _get_password(password: str = None) -> str:
-    if password:
+    if password and password.strip():
         return password
     config = _read_config(_CONFIG_PATH)
     if config and 'defaultPassword' in config and config['defaultPassword'].strip():
@@ -53,18 +53,19 @@ def _get_password(password: str = None) -> str:
     raise ValueError("Password has to be provided")
 
 
-def create_archive(*targets, password: str = None) -> None:
+def create_archive(targets: list[str], password: str = None) -> None:
     password: str = _get_password(password)
     for target in targets:
-        basename = os.path.basename(target)
+        normpath = os.path.normpath(target)
+        basename = os.path.basename(normpath)
         command = shlex.split(
             f"7z a -t7z -m0=LZMA2 -mhe=on -mmt=on -mx=9 -mfb=96 -md=128m "
-            f"'-p{password}' {basename}.7z {target}"
+            f"'-p{password}' {basename}.7z {normpath}"
         )
         subprocess.run(command, check=True)
 
 
-def test_archive(*archives, password: str = None) -> None:
+def test_archive(archives: list[str], password: str = None) -> None:
     password: str = _get_password(password)
     for archive in archives:
         command = shlex.split(f"7z t '-p{password}' {archive}")
