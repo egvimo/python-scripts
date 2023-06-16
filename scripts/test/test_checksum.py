@@ -22,18 +22,18 @@ def prepare():
 
 
 def test_checksum():
-    result = checksum.generate_checksum([TARGET_DIR])
+    result = checksum.generate([TARGET_DIR])
 
     assert result[NORM_TARGET_DIR]
     assert len(result[NORM_TARGET_DIR]) == 40
 
 
 def test_checksum_changed():
-    checksum1 = checksum.generate_checksum([TARGET_DIR])[NORM_TARGET_DIR]
+    checksum1 = checksum.generate([TARGET_DIR])[NORM_TARGET_DIR]
 
     with open(f"{TARGET_DIR}/file1.txt", 'w', encoding='utf-8') as file:
         file.write(f"New random string in file {uuid.uuid4()}")
 
-    checksum2 = checksum.generate_checksum([TARGET_DIR])[NORM_TARGET_DIR]
+    checksum2 = checksum.generate([TARGET_DIR])[NORM_TARGET_DIR]
 
     assert checksum1 != checksum2

@@ -33,12 +33,12 @@ def _checksum_files(sha, file_path, files) -> None:
         sha.update(f"{file}|{filetype}|{filesize}|{mod_time}".encode())
 
 
-def generate_checksum(targets: list[str]) -> dict[str, str]:
+def generate(targets: list[str]) -> dict[str, str]:
     result: dict[str, str] = {}
 
     for target in targets:
         normpath = os.path.normpath(target)
-        sha = hashlib.sha1(normpath.encode(), usedforsecurity=False)
+        sha = hashlib.sha1(usedforsecurity=False)
         for dirpath, dirnames, filenames in os.walk(normpath):
             _checksum_files(sha, dirpath, sorted(dirnames + filenames))
         result[normpath] = sha.hexdigest()
@@ -50,7 +50,7 @@ def main() -> None:
     parser: ArgumentParser = _create_argument_parser()
     args: Namespace = parser.parse_args()
 
-    result: dict[str, str] = generate_checksum(args.targets)
+    result: dict[str, str] = generate(args.targets)
     for target, checksum in result.items():
         print(f"{target}:{checksum}")
 
