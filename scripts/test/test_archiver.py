@@ -25,9 +25,10 @@ def prepare(monkeypatch):
 
 
 def test_archiving():
-    archiver.create_archive([TEST_PATH], PASSWORD)
+    result = archiver.create_archive([TEST_PATH], PASSWORD)
 
     assert os.path.isfile(TEST_ARCHIVE)
+    assert result[os.path.normpath(TEST_ARCHIVE)]
 
 
 def test_archiving_with_config():
@@ -37,9 +38,10 @@ def test_archiving_with_config():
 
     archiver._CONFIG_PATH = f"{os.getcwd()}/archiver/config.json"  # pylint: disable=protected-access
 
-    archiver.create_archive([TEST_PATH])
+    result = archiver.create_archive([TEST_PATH])
 
     assert os.path.isfile(TEST_ARCHIVE)
+    assert result[os.path.normpath(TEST_ARCHIVE)]
 
 
 def test_fail_archiving_without_password():
@@ -55,7 +57,8 @@ def test_fail_archiving_with_empty_password():
 def test_testing():
     archiver.create_archive([TEST_PATH], PASSWORD)
 
-    archiver.test_archive([TEST_ARCHIVE], PASSWORD)
+    result = archiver.test_archive([TEST_ARCHIVE], PASSWORD)
+    assert result[os.path.normpath(TEST_ARCHIVE)]
 
 
 def test_fail_testing_without_password():

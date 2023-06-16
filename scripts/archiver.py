@@ -5,6 +5,7 @@ import json
 import os
 import shlex
 import subprocess
+import sys
 
 
 _HOME = os.path.expanduser('~')
@@ -53,8 +54,10 @@ def _get_password(password: str = None) -> str:
     raise ValueError("Password has to be provided")
 
 
-def create_archive(targets: list[str], password: str = None) -> None:
+def create_archive(targets: list[str], password: str = None) -> dict[str, bool]:
     password: str = _get_password(password)
+
+    result: dict[str, bool] = {}
     for target in targets:
         normpath = os.path.normpath(target)
         basename = os.path.basename(normpath)
@@ -62,24 +65,57 @@ def create_archive(targets: list[str], password: str = None) -> None:
             f"7z a -t7z -m0=LZMA2 -mhe=on -mmt=on -mx=9 -mfb=96 -md=128m "
             f"'-p{password}' {basename}.7z {normpath}"
         )
-        subprocess.run(command, check=True)
+        completed_process = subprocess.run(
+            command, check=False, capture_output=True)
+
+        try:
+            completed_process.check_returncode()
+        except subprocess.CalledProcessError as ex:
+            print(completed_process.stderr.decode(), file=sys.stderr)
+            raise ex
+
+        stdout = completed_process.stdout.decode()
+        print(stdout)
+        result[f"{basename}.7z"] = 'Everything is Ok' in stdout
+
+    return result
 
 
-def test_archive(archives: list[str], password: str = None) -> None:
+def test_archive(archives: list[str], password: str = None) -> dict[str, bool]:
     password: str = _get_password(password)
+
+    result: dict[str, bool] = {}
     for archive in archives:
-        command = shlex.split(f"7z t '-p{password}' {archive}")
-        subprocess.run(command, check=True)
+        normpath = os.path.normpath(archive)
+        command = shlex.split(f"7z t '-p{password}' {normpath}")
+        completed_process = subprocess.run(
+            command, check=False, capture_output=True)
+
+        try:
+            completed_process.check_returncode()
+        except subprocess.CalledProcessError as ex:
+            print(completed_process.stderr.decode(), file=sys.stderr)
+            raise ex
+
+        stdout = completed_process.stdout.decode()
+        print(stdout)
+        result[normpath] = 'Everything is Ok' in stdout
+
+    return result
 
 
 def main() -> None:
     parser = _create_argument_parser()
     args = parser.parse_args()
 
+    result: dict[str, bool]
     if args.action == 'a':
-        create_archive(args.targets, args.password)
+        result = create_archive(args.targets, args.password)
     elif args.action == 't':
-        test_archive(args.archives, args.password)
+        result = test_archive(args.archives, args.password)
+
+    for archive, success in result.items():
+        print(f"{'✅' if success else '❌'} {archive}")
 
 
 if __name__ == '__main__':
