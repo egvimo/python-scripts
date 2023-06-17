@@ -8,75 +8,89 @@ import pytest
 from scripts import archiver
 
 
-TEST_PATH = './test'
-TEST_ARCHIVE = './test.7z'
+TEST_PATH = './out'
+TARGET_DIR = f"{TEST_PATH}/test"
+TEST_ARCHIVE = f"{TEST_PATH}/test.7z"
 PASSWORD = 'test'
 
 
 @pytest.fixture(autouse=True)
-def prepare(monkeypatch):
-    if os.path.exists('./out'):
-        shutil.rmtree('./out')
-    Path('./out/test').mkdir(parents=True, exist_ok=True)
-    monkeypatch.chdir('./out')
+def prepare():
+    # pylint: disable=duplicate-code
+    if os.path.exists(TEST_PATH):
+        shutil.rmtree(TEST_PATH)
+    Path(TARGET_DIR).mkdir(parents=True, exist_ok=True)
     for i in range(1, 4):
-        with open(f"{TEST_PATH}/file{i}.txt", 'w', encoding='utf-8') as file:
+        with open(f"{TARGET_DIR}/file{i}.txt", 'w', encoding='utf-8') as file:
             file.write(f"Random string in file {i} {uuid.uuid4()}")
 
 
 def test_archiving():
-    result = archiver.create_archive([TEST_PATH], PASSWORD)
+    result = archiver.create_archive(
+        [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
 
     assert os.path.isfile(TEST_ARCHIVE)
     assert result[os.path.normpath(TEST_ARCHIVE)]
 
 
 def test_archiving_with_config():
-    Path('./scripts').mkdir(parents=True, exist_ok=True)
-    with open('./scripts/archiver.json', 'w', encoding='utf-8') as config:
+    with open(f"{TEST_PATH}/archiver.json", 'w', encoding='utf-8') as config:
         json.dump({'defaultPassword': 'test'}, config)
 
-    archiver._CONFIG_PATH = f"{os.getcwd()}/scripts/archiver.json"  # pylint: disable=protected-access
+    archiver._CONFIG_PATH = os.path.join(  # pylint: disable=protected-access
+        os.getcwd(), TEST_PATH, 'archiver.json')
 
-    result = archiver.create_archive([TEST_PATH])
+    result = archiver.create_archive([TARGET_DIR], destination=TEST_PATH)
 
     assert os.path.isfile(TEST_ARCHIVE)
     assert result[os.path.normpath(TEST_ARCHIVE)]
 
 
+def test_archiving_without_destination():
+    result = archiver.create_archive([TARGET_DIR], password=PASSWORD)
+
+    assert os.path.isfile('test.7z')
+    assert result[os.path.normpath('test.7z')]
+    os.remove('test.7z')
+
+
 def test_fail_archiving_without_password():
     with pytest.raises(ValueError, match='Password has to be provided'):
-        archiver.create_archive([TEST_PATH])
+        archiver.create_archive([TARGET_DIR])
 
 
 def test_fail_archiving_with_empty_password():
     with pytest.raises(ValueError, match='Password has to be provided'):
-        archiver.create_archive([TEST_PATH], ' ')
+        archiver.create_archive([TARGET_DIR], password=' ')
 
 
 def test_testing():
-    archiver.create_archive([TEST_PATH], PASSWORD)
+    archiver.create_archive(
+        [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
 
-    result = archiver.test_archive([TEST_ARCHIVE], PASSWORD)
+    result = archiver.test_archive([TEST_ARCHIVE], password=PASSWORD)
     assert result[os.path.normpath(TEST_ARCHIVE)]
 
 
 def test_fail_testing_without_password():
-    archiver.create_archive([TEST_PATH], PASSWORD)
+    archiver.create_archive(
+        [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
 
     with pytest.raises(ValueError, match='Password has to be provided'):
         archiver.test_archive([TEST_ARCHIVE])
 
 
 def test_fail_testing_with_empty_password():
-    archiver.create_archive([TEST_PATH], PASSWORD)
+    archiver.create_archive(
+        [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
 
     with pytest.raises(ValueError, match='Password has to be provided'):
         archiver.test_archive([TEST_ARCHIVE], ' ')
 
 
 def test_fail_testing_with_wrong_password(capfd):
-    archiver.create_archive([TEST_PATH], PASSWORD)
+    archiver.create_archive(
+        [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
 
     with pytest.raises(CalledProcessError):
         archiver.test_archive([TEST_ARCHIVE], 'wrong')

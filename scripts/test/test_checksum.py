@@ -13,6 +13,7 @@ NORM_TARGET_DIR = os.path.normpath(TARGET_DIR)
 
 @pytest.fixture(autouse=True)
 def prepare():
+    # pylint: disable=duplicate-code
     if os.path.exists(TEST_PATH):
         shutil.rmtree(TEST_PATH)
     Path(TARGET_DIR).mkdir(parents=True, exist_ok=True)

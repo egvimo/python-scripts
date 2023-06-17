@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentTypeError
 import json
 import os
 import shlex
@@ -12,6 +12,12 @@ _HOME = os.path.expanduser('~')
 _XDG_CONFIG_HOME = os.environ.get('XDG_CONFIG_HOME') or \
     os.path.join(_HOME, '.config')
 _CONFIG_PATH = os.path.join(_XDG_CONFIG_HOME, 'scripts', 'archiver.json')
+
+
+def _check_directory(directory_string):
+    if not os.path.isdir(directory_string):
+        raise ArgumentTypeError('invalid target directory')
+    return directory_string
 
 
 def _create_argument_parser() -> ArgumentParser:
@@ -29,7 +35,9 @@ def _create_argument_parser() -> ArgumentParser:
     t_parser = subparsers.add_parser(
         't', parents=[parent_parser], help='test archive')
 
-    a_parser.add_argument('targets', nargs='+', help='directories to archive')
+    a_parser.add_argument('-d', '--destination',
+                          type=_check_directory, help='destination directory')
+    a_parser.add_argument('inputs', nargs='+', help='directories to archive')
 
     t_parser.add_argument('archives', nargs='+', help='archives to test')
 
@@ -62,7 +70,8 @@ def _get_verbose(verbose: bool = None) -> bool:
 
 
 def create_archive(
-    targets: list[str],
+    inputs: list[str],
+    destination: str = None,
     password: str = None,
     verbose: bool = None
 ) -> dict[str, bool]:
@@ -70,12 +79,16 @@ def create_archive(
     verbose: bool = _get_verbose(verbose)
 
     result: dict[str, bool] = {}
-    for target in targets:
-        normpath = os.path.normpath(target)
+    for i in inputs:
+        normpath = os.path.normpath(i)
         basename = os.path.basename(normpath)
+        if destination:
+            archive = os.path.normpath(f"{os.path.join(destination, basename)}.7z")
+        else:
+            archive = f"{basename}.7z"
         command = shlex.split(
             f"7z a -t7z -m0=LZMA2 -mhe=on -mmt=on -mx=9 -mfb=96 -md=128m "
-            f"'-p{password}' {basename}.7z {normpath}"
+            f"'-p{password}' {archive} {normpath}"
         )
         completed_process = subprocess.run(
             command, check=False, capture_output=True)
@@ -91,7 +104,7 @@ def create_archive(
         if verbose:
             print(stdout)
 
-        result[f"{basename}.7z"] = 'Everything is Ok' in stdout
+        result[archive] = 'Everything is Ok' in stdout
 
     return result
 
@@ -138,7 +151,8 @@ def main() -> None:
 
     result: dict[str, bool]
     if args.action == 'a':
-        result = create_archive(args.targets, args.password, args.verbose)
+        result = create_archive(args.inputs, args.destination,
+                                args.password, args.verbose)
     elif args.action == 't':
         result = test_archive(args.archives, args.password, args.verbose)
     print_result(result)
