@@ -11,27 +11,25 @@ import sys
 _HOME = os.path.expanduser('~')
 _XDG_CONFIG_HOME = os.environ.get('XDG_CONFIG_HOME') or \
     os.path.join(_HOME, '.config')
-_CONFIG_PATH = os.path.join(_XDG_CONFIG_HOME, 'archiver', 'config.json')
+_CONFIG_PATH = os.path.join(_XDG_CONFIG_HOME, 'scripts', 'archiver.json')
 
 
 def _create_argument_parser() -> ArgumentParser:
     parser: ArgumentParser = ArgumentParser(
         description='Creates or tests 7zip archives by calling 7z binary')
 
-    subparsers = parser.add_subparsers(
-        help='action to perform', dest='action')
+    subparsers = parser.add_subparsers(help='action to perform', dest='action')
 
     parent_parser = ArgumentParser(add_help=False)
-    parent_parser.add_argument(
-        '-p', '--password', type=str, help='password')
+    parent_parser.add_argument('-p', '--password', type=str, help='password')
+    parent_parser.add_argument('-v', '--verbose', type=str, help='verbose')
 
     a_parser = subparsers.add_parser(
         'a', parents=[parent_parser], help='create archive')
     t_parser = subparsers.add_parser(
         't', parents=[parent_parser], help='test archive')
 
-    a_parser.add_argument('targets', nargs='+',
-                          help='directories to archive')
+    a_parser.add_argument('targets', nargs='+', help='directories to archive')
 
     t_parser.add_argument('archives', nargs='+', help='archives to test')
 
@@ -54,8 +52,22 @@ def _get_password(password: str = None) -> str:
     raise ValueError("Password has to be provided")
 
 
-def create_archive(targets: list[str], password: str = None) -> dict[str, bool]:
+def _get_verbose(verbose: bool = None) -> bool:
+    if verbose is not None:
+        return verbose
+    config = _read_config(_CONFIG_PATH)
+    if config and 'verbose' in config and config['verbose'].strip():
+        return config['verbose']
+    return False
+
+
+def create_archive(
+    targets: list[str],
+    password: str = None,
+    verbose: bool = None
+) -> dict[str, bool]:
     password: str = _get_password(password)
+    verbose: bool = _get_verbose(verbose)
 
     result: dict[str, bool] = {}
     for target in targets:
@@ -75,14 +87,22 @@ def create_archive(targets: list[str], password: str = None) -> dict[str, bool]:
             raise ex
 
         stdout = completed_process.stdout.decode()
-        print(stdout)
+
+        if verbose:
+            print(stdout)
+
         result[f"{basename}.7z"] = 'Everything is Ok' in stdout
 
     return result
 
 
-def test_archive(archives: list[str], password: str = None) -> dict[str, bool]:
+def test_archive(
+    archives: list[str],
+    password: str = None,
+    verbose: bool = None
+) -> dict[str, bool]:
     password: str = _get_password(password)
+    verbose: bool = _get_verbose(verbose)
 
     result: dict[str, bool] = {}
     for archive in archives:
@@ -98,10 +118,18 @@ def test_archive(archives: list[str], password: str = None) -> dict[str, bool]:
             raise ex
 
         stdout = completed_process.stdout.decode()
-        print(stdout)
+
+        if verbose:
+            print(stdout)
+
         result[normpath] = 'Everything is Ok' in stdout
 
     return result
+
+
+def print_result(result: dict[str, bool]) -> None:
+    for archive, success in result.items():
+        print(f"{'✅' if success else '❌'} {archive}")
 
 
 def main() -> None:
@@ -110,12 +138,10 @@ def main() -> None:
 
     result: dict[str, bool]
     if args.action == 'a':
-        result = create_archive(args.targets, args.password)
+        result = create_archive(args.targets, args.password, args.verbose)
     elif args.action == 't':
-        result = test_archive(args.archives, args.password)
-
-    for archive, success in result.items():
-        print(f"{'✅' if success else '❌'} {archive}")
+        result = test_archive(args.archives, args.password, args.verbose)
+    print_result(result)
 
 
 if __name__ == '__main__':

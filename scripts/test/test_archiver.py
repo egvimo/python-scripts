@@ -32,11 +32,11 @@ def test_archiving():
 
 
 def test_archiving_with_config():
-    Path('./archiver').mkdir(parents=True, exist_ok=True)
-    with open('./archiver/config.json', 'w', encoding='utf-8') as config:
+    Path('./scripts').mkdir(parents=True, exist_ok=True)
+    with open('./scripts/archiver.json', 'w', encoding='utf-8') as config:
         json.dump({'defaultPassword': 'test'}, config)
 
-    archiver._CONFIG_PATH = f"{os.getcwd()}/archiver/config.json"  # pylint: disable=protected-access
+    archiver._CONFIG_PATH = f"{os.getcwd()}/scripts/archiver.json"  # pylint: disable=protected-access
 
     result = archiver.create_archive([TEST_PATH])
 

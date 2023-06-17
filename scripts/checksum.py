@@ -46,13 +46,17 @@ def generate(targets: list[str]) -> dict[str, str]:
     return result
 
 
+def print_result(result: dict[str, str]) -> None:
+    for target, checksum in result.items():
+        print(f"{target}:{checksum}")
+
+
 def main() -> None:
     parser: ArgumentParser = _create_argument_parser()
     args: Namespace = parser.parse_args()
 
     result: dict[str, str] = generate(args.targets)
-    for target, checksum in result.items():
-        print(f"{target}:{checksum}")
+    print_result(result)
 
 
 if __name__ == '__main__':
