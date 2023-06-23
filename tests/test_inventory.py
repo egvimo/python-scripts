@@ -1,13 +1,12 @@
 import os
 import glob
 import pytest
-from scripts import enny_mo
 
+from scripts import inventory
 
-EPISODE_BOUNDARY = 87
 
 TEST_PATH = './out'
-TEST_FILES = TEST_PATH + '/*.mp3'
+TEST_FILES = TEST_PATH + '/*.csv'
 
 
 @pytest.fixture(autouse=True)
@@ -18,9 +17,8 @@ def prepare():
             os.remove(file)
 
 
-@pytest.mark.skip(reason='Switched to podcast')
-def test_episode_download():
-    enny_mo.start_crawler(EPISODE_BOUNDARY)
+def test_inventory():
+    inventory.create_csv('/tmp', TEST_PATH)
 
     assert os.path.exists(TEST_PATH)
     assert len(glob.glob(TEST_FILES)) > 0

@@ -1,0 +1,15 @@
+[tool.pylint.master]
+init-hook = "import os, sys; sys.path.append(os.getcwd())"
+
+[tool.pylint.messages_control]
+disable = [
+  "missing-docstring"
+]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
+pythonpath = [
+  ".", "scripts"
+]

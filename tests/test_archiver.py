@@ -5,7 +5,9 @@ import shutil
 from subprocess import CalledProcessError
 import uuid
 import pytest
-from scripts import archiver
+
+from scripts.archiver import Archiver
+from scripts.common import Config
 
 
 TEST_PATH = './out'
@@ -26,6 +28,7 @@ def prepare():
 
 
 def test_archiving():
+    archiver = Archiver()
     result = archiver.create_archive(
         [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
 
@@ -37,8 +40,12 @@ def test_archiving_with_config():
     with open(f"{TEST_PATH}/archiver.json", 'w', encoding='utf-8') as config:
         json.dump({'defaultPassword': 'test'}, config)
 
-    archiver._CONFIG_PATH = os.path.join(  # pylint: disable=protected-access
-        os.getcwd(), TEST_PATH, 'archiver.json')
+    config = Config('archiver.json')
+    config._CONFIG_PATH = os.path.join(  # pylint: disable=protected-access
+        os.getcwd(), TEST_PATH)
+
+    archiver = Archiver()
+    archiver._config = config  # pylint: disable=protected-access
 
     result = archiver.create_archive([TARGET_DIR], destination=TEST_PATH)
 
@@ -47,6 +54,7 @@ def test_archiving_with_config():
 
 
 def test_archiving_without_destination():
+    archiver = Archiver()
     result = archiver.create_archive([TARGET_DIR], password=PASSWORD)
 
     assert os.path.isfile('test.7z')
@@ -55,16 +63,19 @@ def test_archiving_without_destination():
 
 
 def test_fail_archiving_without_password():
+    archiver = Archiver()
     with pytest.raises(ValueError, match='Password has to be provided'):
         archiver.create_archive([TARGET_DIR])
 
 
 def test_fail_archiving_with_empty_password():
+    archiver = Archiver()
     with pytest.raises(ValueError, match='Password has to be provided'):
         archiver.create_archive([TARGET_DIR], password=' ')
 
 
 def test_testing():
+    archiver = Archiver()
     archiver.create_archive(
         [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
 
@@ -73,6 +84,7 @@ def test_testing():
 
 
 def test_fail_testing_without_password():
+    archiver = Archiver()
     archiver.create_archive(
         [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
 
@@ -81,6 +93,7 @@ def test_fail_testing_without_password():
 
 
 def test_fail_testing_with_empty_password():
+    archiver = Archiver()
     archiver.create_archive(
         [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
 
@@ -89,6 +102,7 @@ def test_fail_testing_with_empty_password():
 
 
 def test_fail_testing_with_wrong_password(capfd):
+    archiver = Archiver()
     archiver.create_archive(
         [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
 

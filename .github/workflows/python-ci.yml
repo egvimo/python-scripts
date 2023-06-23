@@ -33,7 +33,10 @@ jobs:
         run: pipenv install --dev
 
       - name: Lint
-        run: pipenv run pylint scripts
+        run: |
+          pipenv run pylint scripts && \
+          pipenv run pylint tests/*.py && \
+          pipenv run pylint package.py
 
       - name: Test
         run: pipenv run pytest

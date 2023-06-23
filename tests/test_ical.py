@@ -1,5 +1,6 @@
 import os
 import pytest
+
 from scripts import ical
 
 DATA = {
