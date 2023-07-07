@@ -37,8 +37,8 @@ def test_archiving():
 
 
 def test_archiving_with_config():
-    with open(f"{TEST_PATH}/archiver.json", 'w', encoding='utf-8') as config:
-        json.dump({'defaultPassword': 'test'}, config)
+    with open(f"{TEST_PATH}/archiver.json", 'w', encoding='utf-8') as file:
+        json.dump({'defaultPassword': 'test'}, file)
 
     config = Config('archiver.json')
     config._CONFIG_PATH = os.path.join(  # pylint: disable=protected-access

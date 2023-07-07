@@ -1,5 +1,5 @@
 [tool.pylint.master]
-init-hook = "import os, sys; sys.path.append(os.getcwd())"
+init-hook = "import os, sys; sys.path.append(os.getcwd()); sys.path.append(os.path.join(os.getcwd(), 'scripts'))"
 
 [tool.pylint.messages_control]
 disable = [

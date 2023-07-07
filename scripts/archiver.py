@@ -6,7 +6,7 @@ import shlex
 import subprocess
 import sys
 
-import common  # pylint: disable=import-error
+import common
 
 
 class Archiver:
@@ -35,7 +35,7 @@ class Archiver:
                 archive = f"{basename}.7z"
             command = shlex.split(
                 f"7z a -t7z -m0=LZMA2 -mhe=on -mmt=on -mx=9 -mfb=96 -md=128m "
-                f"'-p{password}' {archive} {normpath}"
+                f"'-p{password}' '{archive}' '{normpath}'"
             )
             completed_process = subprocess.run(
                 command, check=False, capture_output=True)
@@ -67,7 +67,7 @@ class Archiver:
         result: dict[str, bool] = {}
         for archive in archives:
             normpath = os.path.normpath(archive)
-            command = shlex.split(f"7z t '-p{password}' {normpath}")
+            command = shlex.split(f"7z t '-p{password}' '{normpath}'")
             completed_process = subprocess.run(
                 command, check=False, capture_output=True)
 
