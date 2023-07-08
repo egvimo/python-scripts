@@ -29,8 +29,7 @@ def prepare():
 
 def test_archiving():
     archiver = Archiver()
-    result = archiver.create_archive(
-        [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
+    result = dict(archiver.create_archives([TARGET_DIR], TEST_PATH, PASSWORD))
 
     assert os.path.isfile(TEST_ARCHIVE)
     assert result[os.path.normpath(TEST_ARCHIVE)]
@@ -47,7 +46,7 @@ def test_archiving_with_config():
     archiver = Archiver()
     archiver._config = config  # pylint: disable=protected-access
 
-    result = archiver.create_archive([TARGET_DIR], destination=TEST_PATH)
+    result = dict(archiver.create_archives([TARGET_DIR], TEST_PATH))
 
     assert os.path.isfile(TEST_ARCHIVE)
     assert result[os.path.normpath(TEST_ARCHIVE)]
@@ -55,7 +54,7 @@ def test_archiving_with_config():
 
 def test_archiving_without_destination():
     archiver = Archiver()
-    result = archiver.create_archive([TARGET_DIR], password=PASSWORD)
+    result = dict(archiver.create_archives([TARGET_DIR], password=PASSWORD))
 
     assert os.path.isfile('test.7z')
     assert result[os.path.normpath('test.7z')]
@@ -65,49 +64,45 @@ def test_archiving_without_destination():
 def test_fail_archiving_without_password():
     archiver = Archiver()
     with pytest.raises(ValueError, match='Password has to be provided'):
-        archiver.create_archive([TARGET_DIR])
+        next(archiver.create_archives([TARGET_DIR]))
 
 
 def test_fail_archiving_with_empty_password():
     archiver = Archiver()
     with pytest.raises(ValueError, match='Password has to be provided'):
-        archiver.create_archive([TARGET_DIR], password=' ')
+        next(archiver.create_archives([TARGET_DIR], password=' '))
 
 
 def test_testing():
     archiver = Archiver()
-    archiver.create_archive(
-        [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
+    next(archiver.create_archives([TARGET_DIR], TEST_PATH, PASSWORD))
 
-    result = archiver.test_archive([TEST_ARCHIVE], password=PASSWORD)
+    result = dict(archiver.test_archives([TEST_ARCHIVE], PASSWORD))
     assert result[os.path.normpath(TEST_ARCHIVE)]
 
 
 def test_fail_testing_without_password():
     archiver = Archiver()
-    archiver.create_archive(
-        [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
+    next(archiver.create_archives([TARGET_DIR], TEST_PATH, PASSWORD))
 
     with pytest.raises(ValueError, match='Password has to be provided'):
-        archiver.test_archive([TEST_ARCHIVE])
+        next(archiver.test_archives([TEST_ARCHIVE]))
 
 
 def test_fail_testing_with_empty_password():
     archiver = Archiver()
-    archiver.create_archive(
-        [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
+    next(archiver.create_archives([TARGET_DIR], TEST_PATH, PASSWORD))
 
     with pytest.raises(ValueError, match='Password has to be provided'):
-        archiver.test_archive([TEST_ARCHIVE], ' ')
+        next(archiver.test_archives([TEST_ARCHIVE], ' '))
 
 
 def test_fail_testing_with_wrong_password(capfd):
     archiver = Archiver()
-    archiver.create_archive(
-        [TARGET_DIR], destination=TEST_PATH, password=PASSWORD)
+    next(archiver.create_archives([TARGET_DIR], TEST_PATH, PASSWORD))
 
     with pytest.raises(CalledProcessError):
-        archiver.test_archive([TEST_ARCHIVE], 'wrong')
+        next(archiver.test_archives([TEST_ARCHIVE], 'wrong'))
 
     _, err = capfd.readouterr()
     assert 'Wrong password?' in err

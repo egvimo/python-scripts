@@ -5,26 +5,26 @@ import os
 import shlex
 import subprocess
 import sys
+from typing import Iterator
 
 import common
 
 
 class Archiver:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._config = common.Config('archiver.json')
 
-    def create_archive(
+    def create_archives(
         self,
-        inputs: list[str],
+        inputs: Iterator[str],
         destination: str | None = None,
         password: str | None = None,
         verbose: bool | None = None
-    ) -> dict[str, bool]:
+    ) -> Iterator[tuple[str, bool]]:
         password: str = self._get_password(password)
         verbose: bool = self._get_verbose(verbose)
 
-        result: dict[str, bool] = {}
         for i in inputs:
             normpath = os.path.normpath(i)
             basename = os.path.basename(normpath)
@@ -51,20 +51,17 @@ class Archiver:
             if verbose:
                 print(stdout)
 
-            result[archive] = 'Everything is Ok' in stdout
+            yield archive, 'Everything is Ok' in stdout
 
-        return result
-
-    def test_archive(
+    def test_archives(
         self,
-        archives: list[str],
+        archives: Iterator[str],
         password: str | None = None,
         verbose: bool | None = None
-    ) -> dict[str, bool]:
+    ) -> Iterator[tuple[str, bool]]:
         password: str = self._get_password(password)
         verbose: bool = self._get_verbose(verbose)
 
-        result: dict[str, bool] = {}
         for archive in archives:
             normpath = os.path.normpath(archive)
             command = shlex.split(f"7z t '-p{password}' '{normpath}'")
@@ -82,9 +79,7 @@ class Archiver:
             if verbose:
                 print(stdout)
 
-            result[normpath] = 'Everything is Ok' in stdout
-
-        return result
+            yield normpath, 'Everything is Ok' in stdout
 
     def _get_password(self, password: str | None = None) -> str:
         if password and password.strip():
@@ -124,8 +119,6 @@ def _create_argument_parser() -> ArgumentParser:
 
     a_parser.add_argument('-d', '--destination',
                           type=_check_directory, help='destination directory')
-    a_parser.add_argument('-t', '--test', action='store_true',
-                          help='test archive after creation')
     a_parser.add_argument('inputs', nargs='+', help='directories to archive')
 
     t_parser.add_argument('archives', nargs='+', help='archives to test')
@@ -133,8 +126,8 @@ def _create_argument_parser() -> ArgumentParser:
     return parser
 
 
-def print_result(result: dict[str, bool]) -> None:
-    for archive, success in result.items():
+def print_result(result: Iterator[tuple[str, bool]]) -> None:
+    for archive, success in result:
         print(f"{'✅' if success else '❌'} {archive}")
 
 
@@ -143,17 +136,12 @@ def main() -> None:
     args: Namespace = parser.parse_args()
     archiver: Archiver = Archiver()
 
-    result: dict[str, bool]
     if args.action == 'a':
-        result = archiver.create_archive(args.inputs, args.destination,
-                                         args.password, args.verbose)
+        result = archiver.create_archives(
+            args.inputs, args.destination, args.password, args.verbose)
         print_result(result)
-        if args.test:
-            result = archiver.test_archive(list(result.keys()),
-                                           args.password, args.verbose)
-            print_result(result)
     elif args.action == 't':
-        result = archiver.test_archive(
+        result = archiver.test_archives(
             args.archives, args.password, args.verbose)
         print_result(result)
 
