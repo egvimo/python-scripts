@@ -110,7 +110,7 @@ def _create_argument_parser() -> ArgumentParser:
 
     parent_parser = ArgumentParser(add_help=False)
     parent_parser.add_argument('-p', '--password', type=str, help='password')
-    parent_parser.add_argument('-v', '--verbose', type=str, help='verbose')
+    parent_parser.add_argument('-v', '--verbose', action='store_true', help='verbose')
 
     a_parser = subparsers.add_parser(
         'a', parents=[parent_parser], help='create archive')

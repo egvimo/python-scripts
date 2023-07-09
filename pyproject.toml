@@ -13,3 +13,5 @@ addopts = [
 pythonpath = [
   ".", "scripts"
 ]
+log_cli = true
+log_cli_level = "DEBUG"
