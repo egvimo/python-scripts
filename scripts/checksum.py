@@ -3,6 +3,7 @@
 from argparse import ArgumentParser, Namespace
 import hashlib
 import os
+from typing import Iterator
 
 
 def _create_argument_parser() -> ArgumentParser:
@@ -33,21 +34,17 @@ def _checksum_files(sha, file_path, files) -> None:
         sha.update(f"{file}|{filetype}|{filesize}|{mod_time}".encode())
 
 
-def generate(targets: list[str]) -> dict[str, str]:
-    result: dict[str, str] = {}
-
+def generate(targets: list[str]) -> Iterator[tuple[str, str]]:
     for target in targets:
         normpath = os.path.normpath(target)
         sha = hashlib.sha1(usedforsecurity=False)
         for dirpath, dirnames, filenames in os.walk(normpath):
             _checksum_files(sha, dirpath, sorted(dirnames + filenames))
-        result[normpath] = sha.hexdigest()
-
-    return result
+        yield normpath, sha.hexdigest()
 
 
-def print_result(result: dict[str, str]) -> None:
-    for target, checksum in result.items():
+def print_result(result: Iterator[tuple[str, str]]) -> None:
+    for target, checksum in result:
         print(f"{target}:{checksum}")
 
 
@@ -55,7 +52,7 @@ def main() -> None:
     parser: ArgumentParser = _create_argument_parser()
     args: Namespace = parser.parse_args()
 
-    result: dict[str, str] = generate(args.targets)
+    result: Iterator[tuple[str, str]] = generate(args.targets)
     print_result(result)
 
 
