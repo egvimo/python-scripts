@@ -22,8 +22,8 @@ def archiver() -> None:
     _create_archive('archiver', ['archiver.py', 'common.py'])
 
 
-def backup() -> None:
-    _create_archive('backup', [
+def backupper() -> None:
+    _create_archive('backupper', [
         'backup.py',
         'common.py',
         'archiver.py',
@@ -32,4 +32,9 @@ def backup() -> None:
 
 
 if __name__ == '__main__':
-    globals()[sys.argv[1]]()
+    if len(sys.argv) > 1:
+        globals()[sys.argv[1]]()
+    else:
+        # TODO Make generic  # pylint: disable=fixme
+        archiver()
+        backupper()

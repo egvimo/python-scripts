@@ -6,6 +6,9 @@ disable = [
   "missing-docstring"
 ]
 
+[tool.mypy]
+mypy_path = "scripts"
+
 [tool.pytest.ini_options]
 addopts = [
     "--import-mode=importlib",

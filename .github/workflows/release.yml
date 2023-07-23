@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - latest
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Create packages
+        run: python package.py
+
+      - name: Upload packages
+        uses: actions/github-script@v6
+        with:
+          script: |
+            try {
+              const release = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag: latest,
+              });
+
+              const assets = await github.rest.repos.listReleaseAssets({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.id,
+              });
+
+              console.log(assets)
+            } catch (error) {
+              core.setFailed(error.message);
+            }
