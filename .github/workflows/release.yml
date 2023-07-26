@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - latest
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Create packages
+        run: python package.py
+
+      - name: Upload packages
+        env:
+          GITHUB_TOKEN: ${{ github.TOKEN }}
+        run: |
+          gh release delete latest -y
+          gh release create latest --latest --title 'latest' *.pyz
