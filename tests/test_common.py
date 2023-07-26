@@ -7,27 +7,38 @@ import pytest
 from scripts.common import Config
 
 
-TEST_PATH = './out'
-TARGET_DIR = f"{TEST_PATH}/test"
-TEST_ARCHIVE = f"{TEST_PATH}/test.7z"
-PASSWORD = 'test'
+TEST_PATH = "./out"
+TARGET_DIR = f"{TEST_PATH}/scripts"
+PASSWORD = "test"
 
 
 @pytest.fixture(autouse=True)
 def prepare():
     if os.path.exists(TEST_PATH):
         shutil.rmtree(TEST_PATH)
-    Path(TEST_PATH).mkdir(parents=True, exist_ok=True)
+    Path(TARGET_DIR).mkdir(parents=True, exist_ok=True)
 
 
 def test_config():
-    with open(f"{TEST_PATH}/test.json", 'w', encoding='utf-8') as config:
-        json.dump({'testKey': 'testValue'}, config)
+    with open(f"{TEST_PATH}/test.json", "w", encoding="utf-8") as file:
+        json.dump({"testKey": "testValue"}, file)
 
-    config = Config('test.json')
-    config._CONFIG_PATH = os.path.join(  # pylint: disable=protected-access
-        os.getcwd(), TEST_PATH)
+    config = Config(f"{TEST_PATH}/test.json")
 
-    value = config.get_value('testKey')
+    value = config.get_value("testKey")
 
-    assert value == 'testValue'
+    assert value == "testValue"
+
+
+@pytest.mark.skip(reason="Static variables are initialized on import")
+def test_config_with_config_home(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("XDG_CONFIG_HOME", TEST_PATH)
+
+    with open(f"{TARGET_DIR}/test.json", "w", encoding="utf-8") as file:
+        json.dump({"testKey": "testValue"}, file)
+
+    config = Config("test.json")
+
+    value = config.get_value("testKey")
+
+    assert value == "testValue"
