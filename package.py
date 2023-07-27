@@ -22,9 +22,16 @@ def archiver() -> None:
     _create_archive("archiver", ["archiver.py", "common.py"])
 
 
+def backupper() -> None:
+    _create_archive(
+        "backupper", ["backupper.py", "common.py", "archiver.py", "checksum.py"]
+    )
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         globals()[sys.argv[1]]()
     else:
         # TODO Make generic  # pylint: disable=fixme
         archiver()
+        backupper()
