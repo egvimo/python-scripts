@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 icalendar = "==5.0.7"
-Scrapy = "==2.9.0"
+Scrapy = "==2.10.0"
 selenium = "==4.11.2"
 markdownify = "==0.11.6"
 requests = "==2.31.0"
