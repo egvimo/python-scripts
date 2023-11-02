@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 icalendar = "==5.0.10"
 Scrapy = "==2.11.0"
-selenium = "==4.15.0"
+selenium = "==4.15.1"
 markdownify = "==0.11.6"
 requests = "==2.31.0"
 feedparser = "==6.0.10"
