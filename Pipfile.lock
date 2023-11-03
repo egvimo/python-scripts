@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "22c96521538636b37c2c31dc99b2b922fee29788de6b8f423c2e975430fc6905"
+            "sha256": "bd2b8fadbffd7b6ec269b78605ff1dc610d992c92c7a1ca902bad0f1766fe40e"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -278,12 +278,12 @@
         },
         "icalendar": {
             "hashes": [
-                "sha256:34f0ca020b804758ddf316eb70d1d46f769bce64638d5a080cb65dd46cfee642",
-                "sha256:6e392c2f301b6b5f49433e14c905db3de444b12876f3345f1856a75e9cd8be6f"
+                "sha256:7a298bb864526589d0de81f4b736eeb6ff9e539fefb405f7977aa5c1e201ca00",
+                "sha256:81864971ac43a1b7d0a555dc1b667836ce59fc719a7f845a96f2f03205fb83b9"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.7'",
-            "version": "==5.0.10"
+            "version": "==5.0.11"
         },
         "idna": {
             "hashes": [
@@ -628,11 +628,11 @@
         },
         "trio": {
             "hashes": [
-                "sha256:3887cf18c8bcc894433420305468388dac76932e9668afa1c49aa3806b6accb3",
-                "sha256:f43da357620e5872b3d940a2e3589aa251fd3f881b65a608d742e00809b1ec38"
+                "sha256:213cd69a05962b1ba24d48caf08f7e7acf02bf1ebfac17c06d1248497f05795e",
+                "sha256:662cfe10018018607a8e7ee191c274bcffbf9056be60b3ccb4f1790df98fc0a3"
             ],
-            "markers": "python_version >= '3.7'",
-            "version": "==0.22.2"
+            "markers": "python_version >= '3.8'",
+            "version": "==0.23.0"
         },
         "trio-websocket": {
             "hashes": [
