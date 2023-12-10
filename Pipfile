@@ -9,7 +9,7 @@ Scrapy = "==2.11.0"
 selenium = "==4.16.0"
 markdownify = "==0.11.6"
 requests = "==2.31.0"
-feedparser = "==6.0.10"
+feedparser = "==6.0.11"
 
 [dev-packages]
 pylint = "==3.0.2"
