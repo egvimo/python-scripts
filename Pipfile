@@ -12,5 +12,5 @@ requests = "==2.31.0"
 feedparser = "==6.0.11"
 
 [dev-packages]
-pylint = "==3.0.2"
+pylint = "==3.0.3"
 pytest = "==7.4.3"
