@@ -1,13 +1,13 @@
 import os
-from pathlib import Path
 import shutil
 import uuid
+from pathlib import Path
+
 import pytest
 
 from scripts import checksum
 
-
-TEST_PATH = './out'
+TEST_PATH = "./out"
 TARGET_DIR = f"{TEST_PATH}/test"
 NORM_TARGET_DIR = os.path.normpath(TARGET_DIR)
 
@@ -19,7 +19,7 @@ def prepare():
         shutil.rmtree(TEST_PATH)
     Path(TARGET_DIR).mkdir(parents=True, exist_ok=True)
     for i in range(1, 4):
-        with open(f"{TARGET_DIR}/file{i}.txt", 'w', encoding='utf-8') as file:
+        with open(f"{TARGET_DIR}/file{i}.txt", "w", encoding="utf-8") as file:
             file.write(f"Random string in file {i} {uuid.uuid4()}")
 
 
@@ -33,7 +33,7 @@ def test_checksum():
 def test_checksum_changed():
     checksum1 = dict(checksum.generate([TARGET_DIR]))[NORM_TARGET_DIR]
 
-    with open(f"{TARGET_DIR}/file1.txt", 'w', encoding='utf-8') as file:
+    with open(f"{TARGET_DIR}/file1.txt", "w", encoding="utf-8") as file:
         file.write(f"New random string in file {uuid.uuid4()}")
 
     checksum2 = dict(checksum.generate([TARGET_DIR]))[NORM_TARGET_DIR]

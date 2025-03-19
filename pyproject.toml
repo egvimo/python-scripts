@@ -1,13 +1,27 @@
-[tool.pylint.master]
-init-hook = "import os, sys; sys.path.append(os.getcwd()); sys.path.append(os.path.join(os.getcwd(), 'scripts'))"
-
-[tool.pylint.messages_control]
-disable = [
-  "missing-docstring"
+[project]
+name = "python-scripts"
+description = "Various Python scripts"
+readme = "README.md"
+license = { text = "MIT" }
+dynamic = ["version"]
+requires-python = ">=3.13"
+dependencies = [
+    "icalendar==5.0.12",
+    "Scrapy==2.11.1",
+    "selenium==4.20.0",
+    "markdownify==0.12.1",
+    "requests==2.31.0",
+    "feedparser==6.0.11",
 ]
 
-[tool.mypy]
-mypy_path = "scripts"
+[dependency-groups]
+dev = [
+    "pytest==8.1.2",
+    "ruff==0.9.10",
+]
+
+[tool.ruff.lint]
+extend-select = ["E", "W", "I", "B", "Q"]
 
 [tool.pytest.ini_options]
 addopts = [

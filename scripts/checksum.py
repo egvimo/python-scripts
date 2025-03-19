@@ -1,30 +1,32 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser, Namespace
 import hashlib
 import os
+from argparse import ArgumentParser, Namespace
 from typing import Iterator
 
 
 def _create_argument_parser() -> ArgumentParser:
     parser: ArgumentParser = ArgumentParser(
-        description='Generate checksum of files or folders')
-    parser.add_argument('targets', nargs='+',
-                        help='files or directories to generate checksum for')
+        description="Generate checksum of files or folders"
+    )
+    parser.add_argument(
+        "targets", nargs="+", help="files or directories to generate checksum for"
+    )
     return parser
 
 
 def _checksum_files(sha, file_path, files) -> None:
     for filename in files:
         file = os.path.join(file_path, filename)
-        filetype: str = 'f'
+        filetype: str = "f"
         filesize: int = 0
         mod_time: float = 0.0
 
         if os.path.islink(file):
-            filetype = 'l'
+            filetype = "l"
         elif os.path.isdir(file):
-            filetype = 'd'
+            filetype = "d"
             mod_time = os.path.getmtime(file)
         else:
             stat = os.stat(file)
@@ -56,5 +58,5 @@ def main() -> None:
     print_result(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

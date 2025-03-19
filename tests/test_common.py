@@ -1,11 +1,11 @@
 import json
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
+
 import pytest
 
 from scripts.common import Config
-
 
 TEST_PATH = "./out"
 TARGET_DIR = f"{TEST_PATH}/scripts"

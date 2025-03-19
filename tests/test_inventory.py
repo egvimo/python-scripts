@@ -1,12 +1,12 @@
-import os
 import glob
+import os
+
 import pytest
 
 from scripts import inventory
 
-
-TEST_PATH = './out'
-TEST_FILES = TEST_PATH + '/*.csv'
+TEST_PATH = "./out"
+TEST_FILES = TEST_PATH + "/*.csv"
 
 
 @pytest.fixture(autouse=True)
@@ -18,7 +18,7 @@ def prepare():
 
 
 def test_inventory():
-    inventory.create_csv('/tmp', TEST_PATH)
+    inventory.create_csv("/tmp", TEST_PATH)
 
     assert os.path.exists(TEST_PATH)
     assert len(glob.glob(TEST_FILES)) > 0

@@ -15,14 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3
-        id: setup-python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install
 
       - name: Create packages
-        run: python package.py
+        run: uv run package.py
 
       - name: Upload packages
         env:

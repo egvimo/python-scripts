@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
 import sys
 import zipapp
+from pathlib import Path
 
 
 def _create_archive(name: str, files: list[str]) -> None:

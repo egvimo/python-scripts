@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser, ArgumentTypeError, Namespace
 import os
+from argparse import ArgumentParser, ArgumentTypeError, Namespace
 from typing import Iterator
 
-from common import Config, Logger
-from archiver import Archiver
 import checksum
-
+from archiver import Archiver
+from common import Config, Logger
 
 logger = Logger()
 
