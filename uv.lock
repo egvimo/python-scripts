@@ -192,15 +192,15 @@ wheels = [
 
 [[package]]
 name = "icalendar"
-version = "5.0.12"
+version = "5.0.14"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "python-dateutil" },
     { name = "pytz" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/40/e7/01b5dd6623fda765e6edd605ef551a44071d3034eb4a252c7f61fb24323b/icalendar-5.0.12.tar.gz", hash = "sha256:73f9be68477722c98320621400943705dcfdbbc6c2b565253f72d3f87e514db8", size = 115981, upload-time = "2024-03-19T22:10:44.817Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c7/11/6c403ef5518356195ad8abcc6fb193929c840f1fa64fdb53226c17fd2c8d/icalendar-5.0.14.tar.gz", hash = "sha256:7050ee71d5af55f84a9fef3ca3596da6453a80d26292c91cee7a49b1e08c5864", size = 121210, upload-time = "2025-11-05T12:57:08.124Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fb/89/badc6427111cffabb6a462bf447cfff5e9e4c856527ddc030c11020b6cc5/icalendar-5.0.12-py3-none-any.whl", hash = "sha256:d873bb859df9c6d0e597b16d247436e0f83f7ac1b90a06429b8393fe8afeba40", size = 116298, upload-time = "2024-03-19T22:10:42.89Z" },
+    { url = "https://files.pythonhosted.org/packages/e5/64/f77390be4b4a5e6321470bcc8f375d6125df66a68ef6b298534ccfbbf1a1/icalendar-5.0.14-py3-none-any.whl", hash = "sha256:036dae6c027393b926c4a7c94a318a406e74d8bbf753e2b282b2bd443227c33b", size = 118629, upload-time = "2025-11-05T12:57:06.909Z" },
 ]
 
 [[package]]
@@ -482,7 +482,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "feedparser", specifier = "==6.0.11" },
-    { name = "icalendar", specifier = "==5.0.12" },
+    { name = "icalendar", specifier = "==5.0.14" },
     { name = "markdownify", specifier = "==0.12.1" },
     { name = "requests", specifier = "==2.32.5" },
     { name = "scrapy", specifier = "==2.11.1" },
