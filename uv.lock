@@ -292,15 +292,15 @@ wheels = [
 
 [[package]]
 name = "markdownify"
-version = "0.12.1"
+version = "0.14.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "six" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c8/2d/e9ff77df5a796adac8a5a2b8f08f0264343091b2f317b8825d1fb267b1be/markdownify-0.12.1.tar.gz", hash = "sha256:1fb08c618b30e0ee7a31a39b998f44a18fb28ab254f55f4af06b6d35a2179e27", size = 17034, upload-time = "2024-03-26T20:57:25.331Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1b/75/483a4bcca436fe88d02dc7686c372631d833848951b368700bdc0c770bb7/markdownify-0.14.1.tar.gz", hash = "sha256:a62a7a216947ed0b8dafb95b99b2ef4a0edd1e18d5653c656f68f03db2bfb2f1", size = 14332, upload-time = "2024-11-24T22:08:30.775Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/51/e13d9198eae9e141f51764842ba2d9186281961486442bfe903316ee5353/markdownify-0.12.1-py3-none-any.whl", hash = "sha256:a3805abd8166dbb7b27783c5599d91f54f10d79894b2621404d85b333c7ce561", size = 16854, upload-time = "2024-03-26T20:57:23.919Z" },
+    { url = "https://files.pythonhosted.org/packages/65/0b/74cec93a7b05edf4fc3ea1c899fe8a37f041d7b9d303c75abf7a162924e0/markdownify-0.14.1-py3-none-any.whl", hash = "sha256:4c46a6c0c12c6005ddcd49b45a5a890398b002ef51380cd319db62df5e09bc2a", size = 11530, upload-time = "2024-11-24T22:08:29.005Z" },
 ]
 
 [[package]]
@@ -483,7 +483,7 @@ dev = [
 requires-dist = [
     { name = "feedparser", specifier = "==6.0.11" },
     { name = "icalendar", specifier = "==5.0.12" },
-    { name = "markdownify", specifier = "==0.12.1" },
+    { name = "markdownify", specifier = "==0.14.1" },
     { name = "requests", specifier = "==2.32.5" },
     { name = "scrapy", specifier = "==2.11.1" },
     { name = "selenium", specifier = "==4.20.0" },
