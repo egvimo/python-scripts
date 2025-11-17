@@ -7,7 +7,7 @@ dynamic = ["version"]
 requires-python = ">=3.13"
 dependencies = [
     "icalendar==5.0.12",
-    "Scrapy==2.11.1",
+    "Scrapy==2.13.4",
     "selenium==4.20.0",
     "markdownify==0.12.1",
     "requests==2.32.5",
