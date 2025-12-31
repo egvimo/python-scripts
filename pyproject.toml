@@ -6,7 +6,7 @@ license = { text = "MIT" }
 dynamic = ["version"]
 requires-python = ">=3.13"
 dependencies = [
-    "icalendar==5.0.12",
+    "icalendar==6.3.2",
     "Scrapy==2.11.1",
     "selenium==4.20.0",
     "markdownify==0.12.1",
