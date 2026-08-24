@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-
 import os
 import shlex
 import subprocess
 import sys
 from argparse import ArgumentParser, ArgumentTypeError, Namespace
-from typing import Iterator
+from collections.abc import Iterator
 
 import common
 
@@ -41,9 +39,9 @@ class Archiver:
 
             try:
                 completed_process.check_returncode()
-            except subprocess.CalledProcessError as ex:
+            except subprocess.CalledProcessError:
                 print(completed_process.stderr.decode(), file=sys.stderr)
-                raise ex
+                raise
 
             stdout = completed_process.stdout.decode()
 
@@ -70,9 +68,9 @@ class Archiver:
 
             try:
                 completed_process.check_returncode()
-            except subprocess.CalledProcessError as ex:
+            except subprocess.CalledProcessError:
                 print(completed_process.stderr.decode(), file=sys.stderr)
-                raise ex
+                raise
 
             stdout = completed_process.stdout.decode()
 

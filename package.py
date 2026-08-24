@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import sys
 import zipapp
 from pathlib import Path

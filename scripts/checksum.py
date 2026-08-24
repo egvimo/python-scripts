@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
-
 import hashlib
 import os
 from argparse import ArgumentParser, Namespace
-from typing import Iterator
+from collections.abc import Iterator
 
 
 def _create_argument_parser() -> ArgumentParser:

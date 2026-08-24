@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
-
 import os
 from pathlib import Path
+from typing import ClassVar
 
 import requests
 from markdownify import markdownify as md
@@ -19,7 +18,7 @@ class EdxCrawler:
     course_name = "k8s"
     email = "xxx"
     password = "xxx"
-    headers = {
+    headers: ClassVar[dict[str, str]] = {
         "User-Agent": (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"
@@ -70,7 +69,7 @@ class EdxCrawler:
         breadcrumb_elements = self.driver.find_elements(
             By.XPATH, "//nav[@aria-label='breadcrumb']/ol/li"
         )
-        breadcrumbs = list(map(lambda e: e.text, breadcrumb_elements))
+        breadcrumbs = [element.text for element in breadcrumb_elements]
         section = " ".join(breadcrumbs[2:])
         if self.current_section != section:
             self.current_section = section
