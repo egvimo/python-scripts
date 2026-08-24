@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from datetime import datetime
 from pathlib import Path
 
@@ -45,7 +43,10 @@ def create_ical(data):
         for event_date in data[event_name]:
             event = Event()
             event.add("summary", event_name)
-            event.add("dtstart", datetime.strptime(event_date, "%d.%m.%Y").date())
+            event.add(
+                "dtstart",
+                datetime.strptime(event_date, "%d.%m.%Y").date(),  # noqa: DTZ007
+            )
             event.add("transp", "TRANSPARENT")
             cal.add_component(event)
 

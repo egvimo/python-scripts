@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
-
 import argparse
 import csv
 import os
-from datetime import datetime
+from datetime import UTC, datetime
 from os import path
 from pathlib import Path
 
@@ -42,13 +40,15 @@ def append_record(data, file_path, files):
             filetype = "l"
         elif path.isdir(file):
             filetype = "d"
-            mod_time = datetime.fromtimestamp(path.getmtime(file)).strftime(
-                "%Y-%m-%d-%H:%M"
-            )
+            mod_time = datetime.fromtimestamp(
+                path.getmtime(file), tz=UTC
+            ).strftime("%Y-%m-%d-%H:%M")
         else:
             stat = os.stat(file)
             filesize = stat.st_size
-            mod_time = datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d-%H:%M")
+            mod_time = datetime.fromtimestamp(stat.st_mtime, tz=UTC).strftime(
+                "%Y-%m-%d-%H:%M"
+            )
         data.append([file, filetype, filesize, mod_time])
 
 

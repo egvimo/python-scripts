@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-
 import os
 from argparse import ArgumentParser, ArgumentTypeError, Namespace
-from typing import Iterator
+from collections.abc import Iterator
 
 import checksum
 from archiver import Archiver

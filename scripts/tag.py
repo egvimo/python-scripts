@@ -1,6 +1,8 @@
-from pathlib import Path
-from mutagen.oggopus import OggOpus
 import re
+from pathlib import Path
+
+from mutagen import MutagenError
+from mutagen.oggopus import OggOpus
 
 files = sorted(Path("/path/to/files").glob("*.opus"))
 
@@ -17,7 +19,7 @@ for file in files:
     # but NOT:
     # 11_003_Chapter 3
 
-    m = re.match(r'^\d+_\d+_Chapter \d+_(.+)$', stem)
+    m = re.match(r"^\d+_\d+_Chapter \d+_(.+)$", stem)
 
     if m:
         current_book = m.group(1).strip()
@@ -38,5 +40,5 @@ for file in files:
 
         print(f"{file.name} -> {title}")
 
-    except Exception as e:
+    except (MutagenError, OSError) as e:
         print(f"ERROR {file.name}: {e}")

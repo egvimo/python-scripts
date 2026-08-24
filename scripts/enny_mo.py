@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-
 import re
 from functools import partial
 from pathlib import Path
+from typing import ClassVar
 from urllib.parse import urljoin
 
 import scrapy
@@ -11,7 +10,7 @@ from scrapy.utils.project import get_project_settings
 
 
 class EnnyMoSpider(scrapy.Spider):
-    headers = {
+    headers: ClassVar[dict[str, str]] = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) "
             "Gecko/20100101 Firefox/77.0"
