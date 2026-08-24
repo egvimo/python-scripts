@@ -12,6 +12,7 @@ dependencies = [
     "markdownify==1.2.3",
     "requests==2.34.2",
     "feedparser==6.0.14",
+    "mutagen>=1.48.1",
 ]
 
 [dependency-groups]
