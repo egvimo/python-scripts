@@ -40,9 +40,9 @@ def append_record(data, file_path, files):
             filetype = "l"
         elif path.isdir(file):
             filetype = "d"
-            mod_time = datetime.fromtimestamp(
-                path.getmtime(file), tz=UTC
-            ).strftime("%Y-%m-%d-%H:%M")
+            mod_time = datetime.fromtimestamp(path.getmtime(file), tz=UTC).strftime(
+                "%Y-%m-%d-%H:%M"
+            )
         else:
             stat = os.stat(file)
             filesize = stat.st_size

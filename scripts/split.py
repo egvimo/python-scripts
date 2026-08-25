@@ -16,10 +16,12 @@ def clean_name(name: str) -> str:
 def run_ffprobe(file_path: Path):
     cmd = [
         "ffprobe",
-        "-v", "error",
-        "-print_format", "json",
+        "-v",
+        "error",
+        "-print_format",
+        "json",
         "-show_chapters",
-        str(file_path)
+        str(file_path),
     ]
     result = subprocess.run(cmd, capture_output=True, text=True, check=True)
     return json.loads(result.stdout)
@@ -29,26 +31,31 @@ def encode_chapter(input_file: Path, out_file: Path, start: float, duration: flo
     cmd = [
         "ffmpeg",
         "-hide_banner",
-        "-loglevel", "error",
+        "-loglevel",
+        "error",
         "-y",
-
-        "-ss", str(start),
-        "-i", str(input_file),
-        "-t", str(duration),
-
+        "-ss",
+        str(start),
+        "-i",
+        str(input_file),
+        "-t",
+        str(duration),
         # Only audio stream
-        "-map", "0:a:0",
+        "-map",
+        "0:a:0",
         "-vn",
-
-        "-c:a", "libopus",
-        "-b:a", BITRATE,
-        "-vbr", "on",
-        "-compression_level", "10",
-
+        "-c:a",
+        "libopus",
+        "-b:a",
+        BITRATE,
+        "-vbr",
+        "on",
+        "-compression_level",
+        "10",
         # No broken metadata
-        "-map_metadata", "-1",
-
-        str(out_file)
+        "-map_metadata",
+        "-1",
+        str(out_file),
     ]
 
     subprocess.run(cmd, check=True)
