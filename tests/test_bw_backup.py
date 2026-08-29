@@ -131,8 +131,14 @@ def test_create_backup_reuses_authenticated_server(
             return "https://vault.example.com"
         if command[1:] == ["status"]:
             return json.dumps({"status": "locked"})
+        if command[1:] == ["list", "organizations"]:
+            return json.dumps([{"id": "org-id", "name": "Example / Org"}])
         if command[1:] == ["unlock", "--passwordenv", "BW_MASTER_PASSWORD", "--raw"]:
             return "session"
+        if command[1] == "export":
+            Path(command[command.index("--output") + 1]).write_bytes(
+                b"encrypted backup"
+            )
         return ""
 
     monkeypatch.setattr(bw_backup, "run", fake_run)
@@ -140,8 +146,6 @@ def test_create_backup_reuses_authenticated_server(
     monkeypatch.setattr(bw_backup, "bw", Path("bw"), raising=False)
     monkeypatch.setattr(bw_backup, "BACKUP_DIR", tmp_path)
 
-    output = tmp_path / "vault-test.json"
-    output.write_bytes(b"encrypted backup")
     monkeypatch.setattr(
         bw_backup,
         "datetime",
@@ -170,6 +174,10 @@ def test_create_backup_reuses_authenticated_server(
     assert not any(command[1:] == ["logout"] for command in commands)
     assert not any(command[1:] == ["login", "--apikey"] for command in commands)
     assert any(command[1:] == ["lock"] for command in commands)
+    exports = [command for command in commands if command[1] == "export"]
+    assert len(exports) == 2
+    assert exports[1][exports[1].index("--organizationid") + 1] == "org-id"
+    assert (tmp_path / "vault-test-org-Example-Org.json").exists()
 
 
 def test_prepare_bw_with_live_release_and_binary(

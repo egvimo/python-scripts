@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import platform
+import re
 import stat
 import subprocess
 import sys
@@ -167,6 +168,13 @@ def safe_extract_zip(archive, destination):
         zf.extractall(destination)
 
 
+def safe_filename(name):
+    """Return a filesystem-safe filename component."""
+
+    name = re.sub(r"[^A-Za-z0-9._-]+", "-", name).strip(".-")
+    return name or "unnamed"
+
+
 def prepare_bw():
     """
     Download the latest Bitwarden CLI if necessary.
@@ -188,25 +196,22 @@ def prepare_bw():
         expected_hash = hash_file.read_text().strip()
 
         if local_version == latest["version"]:
-            print(f"Bitwarden CLI {local_version} found.")
+            print(f"📦 Bitwarden CLI {local_version} found")
 
-            print("Verifying cached CLI...")
+            print("🔍 Verifying cached CLI...")
 
             actual_hash = sha256_file(bw_path)
 
             if actual_hash == expected_hash:
-                print("Cached CLI verified.")
+                print("✅ Cached CLI verified")
 
                 return bw_path
 
-            print("Cached CLI hash mismatch. Downloading again.")
+            print("⚠️ Cached CLI hash mismatch, downloading again...")
 
     archive_path = TMP_DIR / latest["name"]
 
-    print()
-    print(f"Latest Bitwarden CLI : {latest['version']}")
-    print(f"Asset                : {latest['name']}")
-    print()
+    print(f"🔨 Latest Bitwarden CLI: {latest['name']} ({latest['version']})")
     print("⬇️ Downloading Bitwarden CLI...")
 
     with requests.get(latest["url"], stream=True, timeout=REQUEST_TIMEOUT) as response:
@@ -230,7 +235,7 @@ def prepare_bw():
             "The downloaded file has been deleted."
         )
 
-    print("✅ SHA-256 verification successful.")
+    print("✅ SHA-256 verification successful")
 
     bw_path.unlink(missing_ok=True)
 
@@ -256,8 +261,7 @@ def prepare_bw():
     version_file.write_text(latest["version"])
     hash_file.write_text(executable_hash)
 
-    print(f"✅ Bitwarden CLI {latest['version']} ready:")
-    print(f"  {bw_path}")
+    print(f"✅ Bitwarden CLI {latest['version']} ready: {bw_path}")
 
     return bw_path
 
@@ -265,14 +269,12 @@ def prepare_bw():
 def create_backup(bw, config):
     """Create an encrypted Bitwarden JSON backup."""
 
-    master_password = getpass.getpass("Vaultwarden master password: ")
+    master_password = getpass.getpass("✍️ Vaultwarden master password: ")
 
-    export_password = getpass.getpass("Backup encryption password: ")
+    export_password = getpass.getpass("✍️ Backup encryption password: ")
 
     if not export_password:
         raise RuntimeError("Backup encryption password cannot be empty.")
-
-    print()
 
     env = os.environ.copy()
 
@@ -306,7 +308,7 @@ def create_backup(bw, config):
         )
 
         if status["status"] == "unauthenticated":
-            print("🔐 Logging in with API key...")
+            print("🔑 Logging in with API key...")
             run([str(bw), "login", "--apikey"], env=env)
 
         print("🔓 Unlocking vault...")
@@ -344,12 +346,18 @@ def create_backup(bw, config):
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")  # noqa: DTZ005
 
-        output = BACKUP_DIR / f"vault-{timestamp}.json"
+        organizations = json.loads(run([str(bw), "list", "organizations"], env=env))
 
-        print("💾 Creating encrypted backup...")
+        exports = [("personal", None)] + [
+            (f"org-{safe_filename(organization['name'])}", organization["id"])
+            for organization in organizations
+        ]
 
-        run(
-            [
+        print("💾 Creating encrypted backups...")
+
+        for name, organization_id in exports:
+            output = BACKUP_DIR / f"vault-{timestamp}-{name}.json"
+            command = [
                 str(bw),
                 "export",
                 "--format",
@@ -358,23 +366,20 @@ def create_backup(bw, config):
                 export_password,
                 "--output",
                 str(output),
-            ],
-            env=env,
-        )
+            ]
+            if organization_id:
+                command.extend(["--organizationid", organization_id])
+
+            run(command, env=env)
+
+            if output.stat().st_size == 0:
+                raise RuntimeError(f"Backup file is empty: {output}")
+
+            print(f"✅ Backup successfully created: {output}")
 
         export_password = None
 
-        print()
-        print("✅ Backup successfully created:")
-        print(f"  {output}")
-
-        if output.stat().st_size == 0:
-            raise RuntimeError("Backup file is empty!")
-
-        print(f"📏 Backup size: {output.stat().st_size:,} bytes")
-
     finally:
-        print()
         print("🔒 Locking Bitwarden vault...")
 
         try:
@@ -386,11 +391,11 @@ def create_backup(bw, config):
                 env=env,
             )
 
-            print("✅ Vault locked.")
+            print("✅ Vault locked")
 
         except Exception as exc:  # noqa: BLE001
             print(
-                f"WARNING: Could not lock vault: {exc}",
+                f"⚠️ Could not lock vault: {exc}",
                 file=sys.stderr,
             )
 
@@ -402,15 +407,8 @@ def create_backup(bw, config):
 
 
 def main():
-
-    print("Vaultwarden backup")
-    print("==================")
-    print()
-
     bw = prepare_bw()
-
     config = load_config()
-
     create_backup(bw, config)
 
 
