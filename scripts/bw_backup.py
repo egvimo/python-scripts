@@ -38,22 +38,22 @@ def sha256_file(path, chunk_size=1024 * 1024):
 def run(command, env=None, timeout=120):
     """Run a command and return stdout."""
 
-    result = subprocess.run(
-        command,
-        env=env,
-        text=True,
-        capture_output=True,
-        check=True,
-        timeout=timeout,
-    )
-
-    if result.returncode != 0:
+    try:
+        result = subprocess.run(
+            command,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=True,
+            timeout=timeout,
+        )
+    except subprocess.CalledProcessError as exc:
         raise RuntimeError(
             f"Command failed:\n"
             f"  {' '.join(map(str, command))}\n\n"
-            f"stdout:\n{result.stdout}\n"
-            f"stderr:\n{result.stderr}"
-        )
+            f"stdout:\n{exc.stdout}\n"
+            f"stderr:\n{exc.stderr}"
+        ) from exc
 
     return result.stdout.strip()
 
@@ -313,16 +313,21 @@ def create_backup(bw, config):
 
         print("🔓 Unlocking vault...")
 
-        session = run(
-            [
-                str(bw),
-                "unlock",
-                "--passwordenv",
-                "BW_MASTER_PASSWORD",
-                "--raw",
-            ],
-            env=env,
-        )
+        unlock_command = [
+            str(bw),
+            "unlock",
+            "--passwordenv",
+            "BW_MASTER_PASSWORD",
+            "--raw",
+        ]
+
+        try:
+            session = run(unlock_command, env=env)
+        except RuntimeError:
+            print("🔐 Local login state is invalid, logging in again...")
+            run([str(bw), "logout"], env=env)
+            run([str(bw), "login", "--apikey"], env=env)
+            session = run(unlock_command, env=env)
 
         if not session:
             raise RuntimeError("bw unlock did not return a session.")
