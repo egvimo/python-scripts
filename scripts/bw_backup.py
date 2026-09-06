@@ -8,8 +8,10 @@ import stat
 import subprocess
 import sys
 import zipfile
+from collections.abc import Mapping, Sequence
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import common
 import requests
@@ -22,8 +24,11 @@ BACKUP_DIR = BASE_DIR / "out"
 GITHUB_API = "https://api.github.com/repos/bitwarden/clients/releases"
 REQUEST_TIMEOUT = 30
 
+AccountConfig = dict[str, Any]
+AssetInfo = dict[str, str]
 
-def sha256_file(path, chunk_size=1024 * 1024):
+
+def sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
     """Return SHA-256 hash of a file."""
 
     digest = hashlib.sha256()
@@ -35,7 +40,11 @@ def sha256_file(path, chunk_size=1024 * 1024):
     return digest.hexdigest()
 
 
-def run(command, env=None, timeout=120):
+def run(
+    command: Sequence[str | os.PathLike[str]],
+    env: Mapping[str, str] | None = None,
+    timeout: int = 120,
+) -> str:
     """Run a command and return stdout."""
 
     try:
@@ -58,10 +67,8 @@ def run(command, env=None, timeout=120):
     return result.stdout.strip()
 
 
-def load_config():
-    """Load configuration from bw-backup.json."""
-
-    config = common.Config("bw-backup.json").get_config()
+def _validate_account_config(config: Mapping[str, Any]) -> None:
+    """Validate the required settings for one Bitwarden account."""
 
     required = ["vault_url", "client_id", "client_secret"]
 
@@ -69,10 +76,29 @@ def load_config():
         if not config.get(key):
             raise RuntimeError(f"Missing '{key}' in bw-backup.json")
 
+
+def load_config() -> AccountConfig:
+    """Load configuration from bw-backup.json."""
+
+    config = common.Config("bw-backup.json").get_config()
+
+    _validate_account_config(config)
+
     return config
 
 
-def get_platform_info():
+def load_configs() -> list[AccountConfig]:
+    """Load one or more Bitwarden account configurations."""
+
+    config = common.Config("bw-backup.json").get_config()
+
+    if "accounts" not in config:
+        return [load_config()]
+
+    return config["accounts"]
+
+
+def get_platform_info() -> tuple[str, str]:
     """Determine the Bitwarden CLI asset for this machine."""
 
     system = platform.system().lower()
@@ -103,7 +129,7 @@ def get_platform_info():
     return f"bw-oss-{platform_name}-{architecture_suffix}", executable
 
 
-def get_latest_bw_asset():
+def get_latest_bw_asset() -> AssetInfo:
     """Find the latest stable Bitwarden CLI release."""
 
     prefix, executable = get_platform_info()
@@ -151,7 +177,7 @@ def get_latest_bw_asset():
     )
 
 
-def safe_extract_zip(archive, destination):
+def safe_extract_zip(archive: Path, destination: Path) -> None:
     """
     Extract ZIP while preventing path traversal.
     """
@@ -168,14 +194,14 @@ def safe_extract_zip(archive, destination):
         zf.extractall(destination)
 
 
-def safe_filename(name):
+def safe_filename(name: str) -> str:
     """Return a filesystem-safe filename component."""
 
     name = re.sub(r"[^A-Za-z0-9._-]+", "-", name).strip(".-")
     return name or "unnamed"
 
 
-def prepare_bw():
+def prepare_bw() -> Path:
     """
     Download the latest Bitwarden CLI if necessary.
 
@@ -266,12 +292,15 @@ def prepare_bw():
     return bw_path
 
 
-def create_backup(bw, config):
+def create_backup(bw: Path, config: AccountConfig) -> None:
     """Create an encrypted Bitwarden JSON backup."""
 
-    master_password = getpass.getpass("✍️ Vaultwarden master password: ")
+    account_name = config.get("name")
+    log_prefix = f"[{account_name or 'default'}]"
 
-    export_password = getpass.getpass("✍️ Backup encryption password: ")
+    master_password = getpass.getpass(f"✍️ {log_prefix} Vaultwarden master password: ")
+
+    export_password = getpass.getpass(f"✍️ {log_prefix} Backup encryption password: ")
 
     if not export_password:
         raise RuntimeError("Backup encryption password cannot be empty.")
@@ -293,25 +322,15 @@ def create_backup(bw, config):
         )
 
         if current_server.rstrip("/") != config["vault_url"].rstrip("/"):
-            print("🌐 Changing Vaultwarden server...")
+            print(f"🌐 {log_prefix} Changing Vaultwarden server...")
             run([str(bw), "logout"], env=env)
             run([str(bw), "config", "server", config["vault_url"]], env=env)
 
-        status = json.loads(
-            run(
-                [
-                    str(bw),
-                    "status",
-                ],
-                env=env,
-            )
-        )
+        print(f"🔑 {log_prefix} Logging in with API key...")
+        run([str(bw), "logout"], env=env)
+        run([str(bw), "login", "--apikey"], env=env)
 
-        if status["status"] == "unauthenticated":
-            print("🔑 Logging in with API key...")
-            run([str(bw), "login", "--apikey"], env=env)
-
-        print("🔓 Unlocking vault...")
+        print(f"🔓 {log_prefix} Unlocking vault...")
 
         unlock_command = [
             str(bw),
@@ -321,13 +340,7 @@ def create_backup(bw, config):
             "--raw",
         ]
 
-        try:
-            session = run(unlock_command, env=env)
-        except RuntimeError:
-            print("🔐 Local login state is invalid, logging in again...")
-            run([str(bw), "logout"], env=env)
-            run([str(bw), "login", "--apikey"], env=env)
-            session = run(unlock_command, env=env)
+        session = run(unlock_command, env=env)
 
         if not session:
             raise RuntimeError("bw unlock did not return a session.")
@@ -337,7 +350,7 @@ def create_backup(bw, config):
         master_password = None
         env.pop("BW_MASTER_PASSWORD", None)
 
-        print("🔄 Synchronizing vault...")
+        print(f"🔄 {log_prefix} Synchronizing vault...")
 
         run(
             [
@@ -358,10 +371,12 @@ def create_backup(bw, config):
             for organization in organizations
         ]
 
-        print("💾 Creating encrypted backups...")
+        print(f"💾 {log_prefix} Creating encrypted backups...")
+
+        filename_prefix = f"{safe_filename(account_name)}-" if account_name else ""
 
         for name, organization_id in exports:
-            output = BACKUP_DIR / f"vault-{timestamp}-{name}.json"
+            output = BACKUP_DIR / f"vault-{timestamp}-{filename_prefix}{name}.json"
             command = [
                 str(bw),
                 "export",
@@ -380,12 +395,12 @@ def create_backup(bw, config):
             if output.stat().st_size == 0:
                 raise RuntimeError(f"Backup file is empty: {output}")
 
-            print(f"✅ Backup successfully created: {output}")
+            print(f"✅ {log_prefix} Backup successfully created: {output}")
 
         export_password = None
 
     finally:
-        print("🔒 Locking Bitwarden vault...")
+        print(f"🔒 {log_prefix} Locking Bitwarden vault...")
 
         try:
             run(
@@ -396,11 +411,11 @@ def create_backup(bw, config):
                 env=env,
             )
 
-            print("✅ Vault locked")
+            print(f"✅ {log_prefix} Vault locked")
 
         except Exception as exc:  # noqa: BLE001
             print(
-                f"⚠️ Could not lock vault: {exc}",
+                f"⚠️ {log_prefix} Could not lock vault: {exc}",
                 file=sys.stderr,
             )
 
@@ -411,10 +426,10 @@ def create_backup(bw, config):
         export_password = None
 
 
-def main():
+def main() -> None:
     bw = prepare_bw()
-    config = load_config()
-    create_backup(bw, config)
+    for config in load_configs():
+        create_backup(bw, config)
 
 
 if __name__ == "__main__":

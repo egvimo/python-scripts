@@ -16,6 +16,62 @@ def test_sha256_file(tmp_path: Path):
     assert bw_backup.sha256_file(path) == hashlib.sha256(b"backup data").hexdigest()
 
 
+def test_load_configs_supports_multiple_accounts(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    config = {
+        "accounts": [
+            {
+                "name": "personal",
+                "vault_url": "https://personal.example.com",
+                "client_id": "personal-client",
+                "client_secret": "personal-secret",
+            },
+            {
+                "name": "work",
+                "vault_url": "https://work.example.com",
+                "client_id": "work-client",
+                "client_secret": "work-secret",
+            },
+        ]
+    }
+
+    class Config:
+        def __init__(self, _filename):
+            pass
+
+        def get_config(self):
+            return config
+
+    monkeypatch.setattr(bw_backup.common, "Config", Config)
+
+    accounts = bw_backup.load_configs()
+
+    assert [account["name"] for account in accounts] == ["personal", "work"]
+
+
+def test_load_configs_supports_single_account(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    config = {
+        "name": "personal",
+        "vault_url": "https://personal.example.com",
+        "client_id": "personal-client",
+        "client_secret": "personal-secret",
+    }
+
+    class Config:
+        def __init__(self, _filename):
+            pass
+
+        def get_config(self):
+            return config
+
+    monkeypatch.setattr(bw_backup.common, "Config", Config)
+
+    assert bw_backup.load_configs() == [config]
+
+
 @pytest.mark.parametrize(
     ("system", "machine", "expected_prefix", "expected_executable"),
     [
@@ -171,8 +227,8 @@ def test_create_backup_reuses_authenticated_server(
         },
     )
 
-    assert not any(command[1:] == ["logout"] for command in commands)
-    assert not any(command[1:] == ["login", "--apikey"] for command in commands)
+    assert any(command[1:] == ["logout"] for command in commands)
+    assert any(command[1:] == ["login", "--apikey"] for command in commands)
     assert any(command[1:] == ["lock"] for command in commands)
     exports = [command for command in commands if command[1] == "export"]
     assert len(exports) == 2
