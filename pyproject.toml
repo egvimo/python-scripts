@@ -9,7 +9,7 @@ dependencies = [
     "icalendar==7.3.0",
     "Scrapy==2.18.0",
     "selenium==4.47.0",
-    "markdownify==1.2.3",
+    "markdownify==1.2.4",
     "requests==2.34.2",
     "feedparser==6.0.14",
     "mutagen>=1.48.1",
